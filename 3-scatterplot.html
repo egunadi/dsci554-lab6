@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>DSCI 554 Lab scatterplot</title>
+
+  <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css">
+
+  <link href="node_modules/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="./github-dark-dimmed.min.css">
+  <script src="./highlight.min.js"></script>
+
+  <script src="./node_modules/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
+  <link rel="stylesheet" href="./node_modules/highlightjs-copy/dist/highlightjs-copy.min.css" />
+
+  <script>
+    hljs.highlightAll();
+    hljs.addPlugin(new CopyButtonPlugin());
+  </script>
+</head>
+
+<body>
+  <h1>🧪 Scatterplot</h1>
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">Labs index</a></li>
+      <li class="breadcrumb-item active" aria-current="page">D3 scatterplot</li>
+    </ol>
+  </nav>
+
+  <h2>1. Basic scatterplot</h2>
+
+  <div>We implement a basic scatterplot with the code below. Lines marked with 🚧 can be improved.</div>
+
+  <pre><code class="html">&lt;style&gt;
+path {
+  stroke: black;
+}
+
+.tick line {
+  stroke: black;
+}
+
+.tick {
+  stroke: black;
+}
+
+.tick text {
+  stroke: none;
+  fill: black;
+}
+
+.dot {
+  fill: red;
+}
+
+#chart {
+	display: inline-block;
+	vertical-align: top;
+	background-color: #f8f8f8;
+}
+&lt;/style&gt;
+
+&lt;svg id="chart"&gt;&lt;/svg&gt;
+&lt;script src='./node_modules/d3/dist/d3.min.js'&gt;&lt;/script&gt;
+
+&lt;script&gt;
+data = [{ x: 10, y: 8},
+        { x: 12, y: 6},
+        { x: 24, y: 12}];
+
+var margin = { top: 50, left: 50, bottom: 50, right: 50 };
+var width = 400 - margin.left - margin.right;
+var height = 400 - margin.top - margin.bottom;
+
+var svg = d3.select('#chart')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom)
+  .append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+var y = d3.scaleLinear()
+  .domain([6, 12])  //🚧 hard-coded values
+  .range([height, 0]);
+
+var x = d3.scaleLinear()
+  .domain([10, 24])  //🚧 hard-coded values
+  .range([0, width]);
+
+//plot circles after the axes so they appear on top
+svg.selectAll('circle')
+  .data(data)
+  .enter()
+  .append('circle')
+  .attr('r', 3)
+  .attr('cx', d => x(d.x))
+  .attr('cy', d => y(d.y))
+  .attr('class', 'dot');
+
+var xAxis = d3.axisBottom()
+  .scale(x); //🚧 tick labels need formatting
+
+svg.append('g')
+  .attr('transform', 'translate(0,' + height + ')')
+  .call(xAxis);
+
+var yAxis = d3.axisLeft()
+  .scale(y); //🚧 tick labels need formatting
+
+svg.append('g')
+  .attr('class', 'axis')
+  .call(yAxis);
+&lt;/script&gt;</code></pre>
+
+    <!-- basic scaatterplot -->
+    <style>
+      path {
+        stroke: black;
+      }
+      
+      .tick line {
+        stroke: black;
+      }
+      
+      .tick {
+        stroke: black;
+      }
+      
+      .tick text {
+        stroke: none;
+        fill: black;
+      }
+      
+      .dot {
+        fill: red;
+      }
+      
+      #chart {
+        display: inline-block;
+        vertical-align: top;
+        background-color: #f8f8f8;
+      }
+      </style>
+      
+      <svg id="chart"></svg>
+      <script src='./node_modules/d3/dist/d3.min.js'></script>
+      
+      <script>
+      data = [{ x: 10, y: 8},
+              { x: 12, y: 6},
+              { x: 24, y: 12}];
+      
+      var margin = { top: 50, left: 50, bottom: 50, right: 50 };
+      var width = 400 - margin.left - margin.right;
+      var height = 400 - margin.top - margin.bottom;
+      
+      var svg = d3.select('#chart')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+      var y = d3.scaleLinear()
+        .domain([6, 12])  //🚧 hard-coded values
+        .range([height, 0]);
+      
+      var x = d3.scaleLinear()
+        .domain([10, 24])  //🚧 hard-coded values
+        .range([0, width]);
+      
+      //plot circles after the axes so they appear on top
+      svg.selectAll('circle')
+        .data(data)
+        .enter()
+        .append('circle')
+        .attr('r', 3)
+        .attr('cx', d => x(d.x))
+        .attr('cy', d => y(d.y))
+        .attr('class', 'dot');
+      
+      var xAxis = d3.axisBottom()
+        .scale(x); //🚧 tick labels not formatted
+      
+      svg.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(xAxis);
+      
+      var yAxis = d3.axisLeft()
+        .scale(y); //🚧 tick labels not formatted
+      
+      svg.append('g')
+        .attr('class', 'axis')
+        .call(yAxis);
+      </script>
+  </div>
+
+  <h2>2. Scatterplot improvements</h2>
+
+  <p>We improve the scatterplot by:
+  <ul>
+    <li>Removing hard coded values in the axis domain with <code>array.map()</code> and
+      <code>d3.min, d3.max, d3.extent</code> (see <a target="_blank" href="https://github.com/d3/d3-array">d3-array</a>)
+    </li>
+    <li>Adjusting the domains so that there are no data points on top of the axes</li>
+    <li>Formatting the tick labels (see <a target="_blank"
+      href="https://github.com/d3/d3-scale/blob/main/README.md#continuous_ticks">continuous.ticks</a>, <a target="_blank"
+        href="https://github.com/d3/d3-scale/blob/main/README.md#continuous_tickFormat">continuous.tickFormat</a> and <a target="_blank"
+          href="https://github.com/d3/d3-format">d3.format</a>)</li>
+  </ul>
+  </p>
+
+  The improved scatterplot code is shown below.
+  <pre><code class="html" data-trim data-noescape>&lt;svg id="chart2"&gt;&lt;/svg&gt;
+
+&lt;script&gt;
+data = [{ x: 10, y: 8},
+        { x: 12, y: 6},
+        { x: 24, y: 12}];
+
+var margin = { top: 50, left: 50, bottom: 50, right: 50 };
+var width = 400 - margin.left - margin.right;
+var height = 400 - margin.top - margin.bottom;
+
+var svg = d3.select('#chart2')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom)
+  .append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+var PAD = 1;
+//var yDomain = d3.extent(data.map( d =&gt; d.y ));
+var yDomain = d3.extent(data, d =&gt; d.y);
+var y = d3.scaleLinear()
+  .domain([yDomain[0] - PAD, yDomain[1] + PAD])  //🚧 hard-coded values
+  .range([height, 0]);
+
+var xDomain = d3.extent(data.map( d =&gt; d.x ));
+var x = d3.scaleLinear()
+  .domain([xDomain[0] - PAD, xDomain[1] + PAD])  //🚧 hard-coded values
+  .range([0, width]);
+
+//plot circles after the axes so they appear on top
+svg.selectAll('circle')
+  .data(data)
+  .enter()
+  .append('circle')
+  .attr('r', 3)
+  .attr('cx', d =&gt; x(d.x))
+  .attr('cy', d =&gt; y(d.y))
+  .attr('class', 'dot');
+
+var xAxis = d3.axisBottom()
+  .scale(x) //🚧 format tick labels
+  .ticks(3)
+  .tickFormat(d3.format('.2f'));
+
+svg.append('g')
+  .attr('transform', 'translate(0,' + height + ')')
+  .call(xAxis);
+
+var yAxis = d3.axisLeft()
+  .scale(y) //🚧 format tick labels
+  .ticks(5)
+  .tickFormat(d3.format('.2s')) 
+
+svg.append('g')
+  .attr('class', 'axis')
+  .call(yAxis);
+&lt;/script&gt;</code></pre>
+
+  <!-- Improved scatterplot -->
+  <svg id="chart2"></svg>
+  
+  <script>
+  data = [{ x: 10, y: 8},
+          { x: 12, y: 6},
+          { x: 24, y: 12}];
+  
+  var margin = { top: 50, left: 50, bottom: 50, right: 50 };
+  var width = 400 - margin.left - margin.right;
+  var height = 400 - margin.top - margin.bottom;
+  
+  var svg = d3.select('#chart2')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+  
+  var PAD = 1;
+  //var yDomain = d3.extent(data.map( d => d.y ));
+  var yDomain = d3.extent(data, d => d.y);
+  var y = d3.scaleLinear()
+    .domain([yDomain[0] - PAD, yDomain[1] + PAD])  //🚧 hard-coded values
+    .range([height, 0]);
+  
+  var xDomain = d3.extent(data.map( d => d.x ));
+  var x = d3.scaleLinear()
+    .domain([xDomain[0] - PAD, xDomain[1] + PAD])  //🚧 hard-coded values
+    .range([0, width]);
+  
+  //plot circles after the axes so they appear on top
+  svg.selectAll('circle')
+    .data(data)
+    .enter()
+    .append('circle')
+    .attr('r', 3)
+    .attr('cx', d => x(d.x))
+    .attr('cy', d => y(d.y))
+    .attr('class', 'dot');
+  
+  var xAxis = d3.axisBottom()
+    .scale(x) //🚧 format tick labels
+    .ticks(3)
+    .tickFormat(d3.format('.2f'));
+  
+  svg.append('g')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(xAxis);
+  
+  var yAxis = d3.axisLeft()
+    .scale(y) //🚧 format tick labels
+    .ticks(5)
+    .tickFormat(d3.format('.2s')) 
+  
+  svg.append('g')
+    .attr('class', 'axis')
+    .call(yAxis);
+  </script>
+
+  <h2>3. Planets scatterplot</h2>
+
+  <p>We implement a scatterplot of the solar system planets mass versus their distance from the Sun. Because of the large range we use
+    <code>scaleLog</code> on both axes.</p>
+
+  <div class="mb-2 mt-2">The dataset is from the <a target="_blank"
+      href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/">NASA Planetary Fact Sheet - Metric</a>. The following Bootstrap table shows the dataset.</div>
+
+  <table class="table table-striped-columns table-sm">
+    <tbody>
+      <tr>
+        <th></th>
+        <th class="text-center">MERCURY</td>
+        <th class="text-center">VENUS</td>
+        <th class="text-center">EARTH</td>
+        <th class="text-center">MOON</td>
+        <th class="text-center">MARS</td>
+        <th class="text-center">JUPITER</td>
+        <th class="text-center">SATURN</td>
+        <th class="text-center">URANUS</td>
+        <th class="text-center">NEPTUNE</td>
+        <th class="text-center">PLUTO</td>
+      </tr>
+      <tr>
+        <th class="text-left">Mass (10<sup>24</sup>kg)</th>
+        <td class="text-center">0.330</td>
+        <td class="text-center">4.87</td>
+        <td class="text-center">5.97</td>
+        <td class="text-center">0.073</td>
+        <td class="text-center">0.642</td>
+        <td class="text-center">1898</td>
+        <td class="text-center">568</td>
+        <td class="text-center">86.8</td>
+        <td class="text-center">102</td>
+        <td class="text-center">0.0146</td>
+      </tr>
+      <tr>
+        <th class="text-left">Diameter (km)</th>
+        <td class="text-center">4879</td>
+        <td class="text-center">12,104</td>
+        <td class="text-center">12,756</td>
+        <td class="text-center">3475</td>
+        <td class="text-center">6792</td>
+        <td class="text-center">142,984</td>
+        <td class="text-center">120,536</td>
+        <td class="text-center">51,118</td>
+        <td class="text-center">49,528</td>
+        <td class="text-center">2370</td>
+      </tr>
+      <tr>
+        <th class="text-left">Density (kg/m<sup>3</sup>)</th>
+        <td class="text-center">5427</td>
+        <td class="text-center">5243</td>
+        <td class="text-center">5514</td>
+        <td class="text-center">3340</td>
+        <td class="text-center">3933</td>
+        <td class="text-center">1326</td>
+        <td class="text-center">687</td>
+        <td class="text-center">1271</td>
+        <td class="text-center">1638</td>
+        <td class="text-center">2095</td>
+      </tr>
+      <tr>
+        <th class="text-left">Gravity (m/s<sup>2</sup>)</th>
+        <td class="text-center">3.7</td>
+        <td class="text-center">8.9</td>
+        <td class="text-center">9.8</td>
+        <td class="text-center">1.6</td>
+        <td class="text-center">3.7</td>
+        <td class="text-center">23.1</td>
+        <td class="text-center">9.0</td>
+        <td class="text-center">8.7</td>
+        <td class="text-center">11.0</td>
+        <td class="text-center">0.7</td>
+      </tr>
+      <tr>
+        <th class="text-left">Escape Velocity (km/s)</th>
+        <td class="text-center">4.3</td>
+        <td class="text-center">10.4</td>
+        <td class="text-center">11.2</td>
+        <td class="text-center">2.4</td>
+        <td class="text-center">5.0</td>
+        <td class="text-center">59.5</td>
+        <td class="text-center">35.5</td>
+        <td class="text-center">21.3</td>
+        <td class="text-center">23.5</td>
+        <td class="text-center">1.3</td>
+      </tr>
+      <tr>
+        <th class="text-left">Rotation Period (hours)</th>
+        <td class="text-center">1407.6</td>
+        <td class="text-center">-5832.5</td>
+        <td class="text-center">23.9</td>
+        <td class="text-center">655.7</td>
+        <td class="text-center">24.6</td>
+        <td class="text-center">9.9</td>
+        <td class="text-center">10.7</td>
+        <td class="text-center">-17.2</td>
+        <td class="text-center">16.1</td>
+        <td class="text-center">-153.3</td>
+      </tr>
+      <tr>
+        <th class="text-left">Length of Day (hours)</th>
+        <td class="text-center">4222.6</td>
+        <td class="text-center">2802.0</td>
+        <td class="text-center">24.0</td>
+        <td class="text-center">708.7</td>
+        <td class="text-center">24.7</td>
+        <td class="text-center">9.9</td>
+        <td class="text-center">10.7</td>
+        <td class="text-center">17.2</td>
+        <td class="text-center">16.1</td>
+        <td class="text-center">153.3</td>
+      </tr>
+      <tr>
+        <th class="text-left">Distance from Sun (10<sup>6</sup> km)</th>
+        <td class="text-center">57.9</td>
+        <td class="text-center">108.2</td>
+        <td class="text-center">149.6</td>
+        <td class="text-center">0.384*</td>
+        <td class="text-center">227.9</td>
+        <td class="text-center">778.6</td>
+        <td class="text-center">1433.5</td>
+        <td class="text-center">2872.5</td>
+        <td class="text-center">4495.1</td>
+        <td class="text-center">5906.4</td>
+      </tr>
+      <tr>
+        <th class="text-left">Perihelion (10<sup>6</sup> km)</th>
+        <td class="text-center">46.0</td>
+        <td class="text-center">107.5</td>
+        <td class="text-center">147.1</td>
+        <td class="text-center">0.363*</td>
+        <td class="text-center">206.6</td>
+        <td class="text-center">740.5</td>
+        <td class="text-center">1352.6</td>
+        <td class="text-center">2741.3</td>
+        <td class="text-center">4444.5</td>
+        <td class="text-center">4436.8</td>
+      </tr>
+      <tr>
+        <th class="text-left">Aphelion (10<sup>6</sup> km)</th>
+        <td class="text-center">69.8</td>
+        <td class="text-center">108.9</td>
+        <td class="text-center">152.1</td>
+        <td class="text-center">0.406*</td>
+        <td class="text-center">249.2</td>
+        <td class="text-center">816.6</td>
+        <td class="text-center">1514.5</td>
+        <td class="text-center">3003.6</td>
+        <td class="text-center">4545.7</td>
+        <td class="text-center">7375.9</td>
+      </tr>
+      <tr>
+        <th class="text-left">Orbital Period (days)</th>
+        <td class="text-center">88.0</td>
+        <td class="text-center">224.7</td>
+        <td class="text-center">365.2</td>
+        <td class="text-center">27.3</td>
+        <td class="text-center">687.0</td>
+        <td class="text-center">4331</td>
+        <td class="text-center">10,747</td>
+        <td class="text-center">30,589</td>
+        <td class="text-center">59,800</td>
+        <td class="text-center">90,560</td>
+      </tr>
+      <tr>
+        <th class="text-left">Orbital Velocity (km/s)</th>
+        <td class="text-center">47.4</td>
+        <td class="text-center">35.0</td>
+        <td class="text-center">29.8</td>
+        <td class="text-center">1.0</td>
+        <td class="text-center">24.1</td>
+        <td class="text-center">13.1</td>
+        <td class="text-center">9.7</td>
+        <td class="text-center">6.8</td>
+        <td class="text-center">5.4</td>
+        <td class="text-center">4.7</td>
+      </tr>
+      <tr>
+        <th class="text-left">Orbital Inclination (degrees)</th>
+        <td class="text-center">7.0</td>
+        <td class="text-center">3.4</td>
+        <td class="text-center">0.0</td>
+        <td class="text-center">5.1</td>
+        <td class="text-center">1.9</td>
+        <td class="text-center">1.3</td>
+        <td class="text-center">2.5</td>
+        <td class="text-center">0.8</td>
+        <td class="text-center">1.8</td>
+        <td class="text-center">17.2</td>
+      </tr>
+      <tr>
+        <th class="text-left">Orbital Eccentricity</th>
+        <td class="text-center">0.205</td>
+        <td class="text-center">0.007</td>
+        <td class="text-center">0.017</td>
+        <td class="text-center">0.055</td>
+        <td class="text-center">0.094</td>
+        <td class="text-center">0.049</td>
+        <td class="text-center">0.057</td>
+        <td class="text-center">0.046</td>
+        <td class="text-center">0.011</td>
+        <td class="text-center">0.244</td>
+      </tr>
+      <tr>
+        <th class="text-left">Obliquity to Orbit (degrees)</th>
+        <td class="text-center">0.034</td>
+        <td class="text-center">177.4</td>
+        <td class="text-center">23.4</td>
+        <td class="text-center">6.7</td>
+        <td class="text-center">25.2</td>
+        <td class="text-center">3.1</td>
+        <td class="text-center">26.7</td>
+        <td class="text-center">97.8</td>
+        <td class="text-center">28.3</td>
+        <td class="text-center">122.5</td>
+      </tr>
+      <tr>
+        <th class="text-left">Mean Temperature (C)</th>
+        <td class="text-center">167</td>
+        <td class="text-center">464</td>
+        <td class="text-center">15</td>
+        <td class="text-center">-20</td>
+        <td class="text-center">-65</td>
+        <td class="text-center">-110</td>
+        <td class="text-center">-140</td>
+        <td class="text-center">-195</td>
+        <td class="text-center">-200</td>
+        <td class="text-center">-225</td>
+      </tr>
+      <tr>
+        <th class="text-left">Surface Pressure (bars)</b></th>
+        <td class="text-center">0</td>
+        <td class="text-center">92</td>
+        <td class="text-center">1</td>
+        <td class="text-center">0</td>
+        <td class="text-center">0.01</td>
+        <td class="text-center">NA</td>
+        <td class="text-center">NA</td>
+        <td class="text-center">NA</td>
+        <td class="text-center">NA</td>
+        <td class="text-center">0.00001</td>
+      </tr>
+      <tr>
+        <th class="text-left">Number of Moons</th>
+        <td class="text-center">0</td>
+        <td class="text-center">0</td>
+        <td class="text-center">1</td>
+        <td class="text-center">0</td>
+        <td class="text-center">2</td>
+        <td class="text-center">79</td>
+        <td class="text-center">62</td>
+        <td class="text-center">27</td>
+        <td class="text-center">14</td>
+        <td class="text-center">5</td>
+      </tr>
+      <tr>
+        <th class="text-left">Ring System?</th>
+        <td class="text-center">No</td>
+        <td class="text-center">No</td>
+        <td class="text-center">No</td>
+        <td class="text-center">No</td>
+        <td class="text-center">No</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">No</td>
+      </tr>
+      <tr>
+        <th class="text-left">Global Magnetic Field?</th>
+        <td class="text-center">Yes</td>
+        <td class="text-center">No</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">No</td>
+        <td class="text-center">No</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">Yes</td>
+        <td class="text-center">NA</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>After scraping the data from the table and using the multicursor we create the following JSON:</p>
+
+  <pre><code class="plaintext">[
+  { "name": "MERCURY", "mass": 0.330, "dist": 57.9 },
+  { "name": "VENUS", "mass": 4.87, "dist": 108.2 },
+  { "name": "EARTH", "mass": 5.97, "dist": 149.6 },
+  { "name": "MOON", "mass": 0.073, "dist": 0.384 },
+  { "name": "MARS", "mass": 0.642, "dist": 227.9 },
+  { "name": "JUPITER", "mass": 1898, "dist": 778.6 },
+  { "name": "SATURN", "mass": 568, "dist": 1433.5 },
+  { "name": "URANUS", "mass": 86.8, "dist": 2872.5 },
+  { "name": "NEPTUNE","mass": 102, "dist": 4495.1 },
+  { "name": "PLUTO", "mass": 0.0146, "dist": 5906.4 }
+]</code></pre>
+
+    <!-- mass vs. distance to sun scatterplot -->
+    <svg id="chart3"></svg>
+    
+    <script>
+    data = [{ x: 10, y: 8},
+            { x: 12, y: 6},
+            { x: 24, y: 12}];
+    
+    data = [
+      { "name": "MERCURY", "mass": 0.33, "dist": 57.9 },
+      { "name": "VENUS", "mass": 4.87, "dist": 108.2 },
+      { "name": "EARTH", "mass": 5.97, "dist": 149.6 },
+      { "name": "MOON", "mass": 0.073, "dist": 0.384 },
+      { "name": "MARS", "mass": 0.642, "dist": 227.9 },
+      { "name": "JUPITER", "mass": 1898, "dist": 778.6 },
+      { "name": "SATURN", "mass": 568, "dist": 1433.5 },
+      { "name": "URANUS", "mass": 86.8, "dist": 2872.5 },
+      { "name": "NEPTUNE", "mass": 102, "dist": 4495.1 },
+      { "name": "PLUTO", "mass": 0.0146, "dist": 5906.4 }
+    ];
+
+    //margin convention
+    var margin = { top: 50, left: 50, bottom: 50, right: 50 };
+    var width = 600 - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
+    
+    var svg = d3.select('#chart3')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+    
+    //title and axes titles added with copilot!
+    svg.append('text')
+      .attr('x', width / 2)
+      .attr('y', -margin.top / 2)
+      .attr('text-anchor', 'middle')
+      .text('Planets mass vs. distance to Sun');
+
+    svg.append('text')
+      .attr('x', width / 2)
+      .attr('y', height + margin.bottom / 2 + 6)
+      .attr('font-size', '12px')
+      .attr('text-anchor', 'middle')
+      .text('Mass (10^24 kg)');
+
+    // svg.append('text')
+    //   .attr('transform', 'rotate(-90)')
+    //   .attr('x', -height / 2)
+    //   .attr('y', -margin.left / 2)
+    //   .attr('text-anchor', 'middle')
+    //   .text('Distance to Sun (10^6 km)');
+
+    //superscript with ChatGPT
+    svg.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -height / 2)
+      .attr('y', -margin.left / 2 - 8)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '12px') // Set the font size for the entire text
+      .text('Distance to Sun (10')
+      .append('tspan')
+      .attr('font-size', '8px') // Set the font size for the entire text
+      .attr('dy', '-0.5em') // Adjust the vertical position as needed
+      .text('6')
+      .append('tspan')
+      .attr('font-size', '12px') // Set the font size for the entire text
+      .attr('dy', '0.5em') // Adjust the vertical position as needed
+      .text(' km)');
+
+    var yDomain = d3.extent(data.map(d => d.dist));
+    // distance domain is [0.384, 5906.4]
+    //console.log(yDomain);
+
+    var y = d3.scaleLog()
+      .domain([yDomain[0] * 0.8,  yDomain[1] * 1.2])  //extend the domain so there are no data points on top of the axes
+      .range([height, 0]);
+    
+    var xDomain = d3.extent(data.map(d => d.mass));
+    var x = d3.scaleLog()
+      .domain([xDomain[0] * 0.8,  xDomain[1] * 1.2])  //extend the domain so there are no data points on top of the axes
+      .range([0, width]);
+    
+    //plot circles after the axes so they appear on top
+    svg.selectAll('circle')
+      .data(data)
+      .enter()
+      .append('circle')
+      .attr('r', 3)
+      .attr('cx', d => x(d.mass))
+      .attr('cy', d => y(d.dist))
+      .attr('class', 'dot');
+    
+    var xAxis = d3.axisBottom()
+      .scale(x); //🚧 format tick labels
+    
+    svg.append('g')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xAxis);
+    
+    var yAxis = d3.axisLeft()
+      .scale(y); //🚧 format tick labels
+    
+    svg.append('g')
+      .attr('class', 'axis')
+      .call(yAxis);
+    </script>
+  </div>
+  <div class="mt-3 text-end"><a href="#"><i class="bi bi-arrow-up"></i> top</a></div>
+</body>
+
+</html>
